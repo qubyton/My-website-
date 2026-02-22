@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quby TON Coin - The Cutest Meme Coin on TON Network</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  
+  <style>
+    :root {
+      --bg: #060a10;
+      --bg-secondary: #0c1220;
+      --fg: #f0f4f8;
+      --muted: #6b7a90;
+      --accent-blue: #00d4ff;
+      --accent-gold: #f0b90b;
+      --accent-teal: #00ffaa;
+      --card: rgba(12, 22, 40, 0.7);
+      --border: rgba(0, 212, 255, 0.15);
+      --glow-blue: rgba(0, 212, 255, 0.4);
+      --glow-gold: rgba(240, 185, 11, 0.4);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      overflow-x: hidden;
+    }
+    
+    .font-display {
+      font-family: 'Orbitron', sans-serif;
+    }
+    
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* Gradient overlays */
+    .hero-gradient {
+      background: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 212, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 40% at 80% 60%, rgba(240, 185, 11, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 100%);
+    }
+    
+    /* Glowing button styles */
+    .btn-glow-blue {
+      position: relative;
+      background: linear-gradient(135deg, var(--accent-blue) 0%, #0099cc 100%);
+      box-shadow: 
+        0 0 20px var(--glow-blue),
+        0 0 40px rgba(0, 212, 255, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-glow-blue:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        0 0 30px var(--glow-blue),
+        0 0 60px rgba(0, 212, 255, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn-glow-gold {
+      position: relative;
+      background: linear-gradient(135deg, var(--accent-gold) 0%, #d4a000 100%);
+      box-shadow: 
+        0 0 20px var(--glow-gold),
+        0 0 40px rgba(240, 185, 11, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-glow-gold:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        0 0 30px var(--glow-gold),
+        0 0 60px rgba(240, 185, 11, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn-outline {
+      position: relative;
+      background: transparent;
+      border: 2px solid var(--accent-blue);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-outline:hover {
+      background: rgba(0, 212, 255, 0.1);
+      box-shadow: 0 0 30px var(--glow-blue);
+      transform: translateY(-2px);
+    }
+    
+    /* Card styles */
+    .glass-card {
+      background: var(--card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      transition: all 0.4s ease;
+    }
+    
+    .glass-card:hover {
+      border-color: rgba(0, 212, 255, 0.4);
+      box-shadow: 0 0 40px rgba(0, 212, 255, 0.1);
+      transform: translateY(-5px);
+    }
+    
+    /* Roadmap timeline */
+    .timeline-item {
+      position: relative;
+      padding-left: 40px;
+    }
+    
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      box-shadow: 0 0 20px var(--glow-blue);
+    }
+    
+    .timeline-item::after {
+      content: '';
+      position: absolute;
+      left: 9px;
+      top: 20px;
+      width: 2px;
+      height: calc(100% - 10px);
+      background: linear-gradient(180deg, var(--accent-blue), transparent);
+    }
+    
+    .timeline-item:last-child::after {
+      display: none;
+    }
+    
+    /* Floating animation */
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+    
+    .float-animation {
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    .pulse-glow {
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+    
+    .shimmer-text {
+      background: linear-gradient(
+        90deg, 
+        var(--fg) 0%, 
+        var(--accent-gold) 25%, 
+        var(--fg) 50%, 
+        var(--accent-blue) 75%, 
+        var(--fg) 100%
+      );
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 4s linear infinite;
+    }
+    
+    /* Scroll reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    
+    /* Coin 3D effect */
+    .coin-3d {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: 
+        radial-gradient(ellipse 30% 30% at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 50%),
+        radial-gradient(ellipse 100% 100% at 50% 50%, var(--accent-gold) 0%, #b8860b 50%, #8b6914 100%);
+      box-shadow: 
+        0 0 60px var(--glow-gold),
+        0 0 100px rgba(240, 185, 11, 0.3),
+        inset 0 -10px 30px rgba(0, 0, 0, 0.3),
+        inset 0 10px 30px rgba(255, 255, 255, 0.2);
+    }
+    
+    .coin-3d::before {
+      content: 'Q';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 80px;
+      font-weight: 900;
+      color: var(--bg);
+      text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.3);
+    }
+    
+    /* Mascot SVG styling */
+    .mascot-container {
+      filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.5));
+    }
+    
+    /* Navigation */
+    .nav-link {
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--accent-blue);
+      transition: width 0.3s ease;
+    }
+    
+    .nav-link:hover::after {
+      width: 100%;
+    }
+    
+    .nav-link:hover {
+      color: var(--accent-blue);
+    }
+    
+    /* Feature icon glow */
+    .feature-icon {
+      position: relative;
+    }
+    
+    .feature-icon::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      opacity: 0.2;
+      filter: blur(15px);
+      transition: all 0.3s ease;
+    }
+    
+    .glass-card:hover .feature-icon::before {
+      opacity: 0.4;
+      transform: translate(-50%, -50%) scale(1.5);
+    }
+    
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--accent-blue);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-gold);
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  
+  <div class="content">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 backdrop-blur-lg bg-opacity-80" style="background: rgba(6, 10, 16, 0.8);">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16 md:h-20">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center font-display font-bold text-lg text-black">Q</div>
+            <span class="font-display font-bold text-lg tracking-wider">QUBY TON</span>
+          </div>
+          
+          <div class="hidden md:flex items-center gap-8">
+            <a href="#about" class="nav-link text-sm font-medium text-gray-300">About</a>
+            <a href="#why-ton" class="nav-link text-sm font-medium text-gray-300">Why TON</a>
+            <a href="#roadmap" class="nav-link text-sm font-medium text-gray-300">Roadmap</a>
+            <a href="#token" class="nav-link text-sm font-medium text-gray-300">Token</a>
+          </div>
+          
+          <a href="https://t.me/gasPump_bot/app?startapp=eyJyZWZfdXNlcl9pZCI6NTc0NTM1NzEzNSwidG9rZW5fYWRkcmVzcyI6IkVRRHZJVVVYNXJMX0dtUFQzeDhmQ2RFTnhPS3dqZkhLOXhGcHNPTkpfVXJDTVZUNyJ9" 
+             target="_blank"
+             class="btn-glow-gold px-5 py-2.5 rounded-full font-display font-semibold text-sm text-black">
+            Buy Now
+          </a>
+        </div>
+      </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero-gradient min-h-screen flex items-center pt-20 relative overflow-hidden">
+      <!-- Floating coins background -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute w-16 h-16 rounded-full bg-gradient-to-br from-yellow-400/30 to-yellow-600/30 blur-sm float-animation" style="top: 20%; left: 10%; animation-delay: 0s;"></div>
+        <div class="absolute w-12 h-12 rounded-full bg-gradient-to-br from-cyan-400/20 to-blue-600/20 blur-sm float-animation" style="top: 60%; left: 5%; animation-delay: 1s;"></div>
+        <div class="absolute w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400/20 to-yellow-600/20 blur-sm float-animation" style="top: 80%; right: 10%; animation-delay: 2s;"></div>
+        <div class="absolute w-14 h-14 rounded-full bg-gradient-to-br from-cyan-400/20 to-blue-600/20 blur-sm float-animation" style="top: 30%; right: 5%; animation-delay: 0.5s;"></div>
+      </div>
+      
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          <!-- Left content -->
+          <div class="text-center lg:text-left">
+            <div class="reveal">
+              <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider mb-6" 
+                    style="background: rgba(0, 212, 255, 0.15); border: 1px solid rgba(0, 212, 255, 0.3); color: var(--accent-blue);">
+                POWERED BY TON BLOCKCHAIN
+              </span>
+            </div>
+            
+            <h1 class="font-display font-black text-5xl sm:text-6xl lg:text-7xl xl:text-8xl leading-tight mb-6 reveal reveal-delay-1">
+              <span class="shimmer-text">QUBY TON</span>
+              <br>
+              <span class="text-gray-100">COIN</span>
+            </h1>
+            
+            <p class="text-lg sm:text-xl text-gray-400 mb-8 max-w-xl mx-auto lg:mx-0 reveal reveal-delay-2">
+              The Cutest Meme Coin on the TON Network. Powered by the TON Blockchain. Built for the Community. Designed for the Future.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start reveal reveal-delay-3">
+              <a href="https://t.me/gasPump_bot/app?startapp=eyJyZWZfdXNlcl9pZCI6NTc0NTM1NzEzNSwidG9rZW5fYWRkcmVzcyI6IkVRRHZJVVVYNXJMX0dtUFQzeDhmQ2RFTnhPS3dqZkhLOXhGcHNPTkpfVXJDTVZUNyJ9" 
+                 target="_blank"
+                 class="btn-glow-gold px-8 py-4 rounded-full font-display font-bold text-base text-black flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 6v12M6 12h12"/>
+                </svg>
+                Buy on GasPump
+              </a>
+              
+              <a href="https://t.me/Qubyton" 
+                 target="_blank"
+                 class="btn-outline px-8 py-4 rounded-full font-display font-bold text-base text-cyan-400 flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.015-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.062 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.751-.244-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.831-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.477-1.635.099-.002.321.023.465.178.121.13.154.309.17.455.015.147.034.431.019.665z"/>
+                </svg>
+                Join Telegram
+              </a>
+            </div>
+            
+            <!-- Stats -->
+            <div class="grid grid-cols-3 gap-4 mt-12 reveal reveal-delay-4">
+              <div class="text-center lg:text-left">
+                <div class="font-display font-bold text-2xl sm:text-3xl text-cyan-400" id="stat-holders">0</div>
+                <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">Holders</div>
+              </div>
+              <div class="text-center lg:text-left">
+                <div class="font-display font-bold text-2xl sm:text-3xl text-yellow-400" id="stat-tx">0</div>
+                <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">Transactions</div>
+              </div>
+              <div class="text-center lg:text-left">
+                <div class="font-display font-bold text-2xl sm:text-3xl text-teal-400" id="stat-members">0</div>
+                <div class="text-xs text-gray-500 uppercase tracking-wider mt-1">Community</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Right content - Mascot -->
+          <div class="flex justify-center lg:justify-end reveal">
+            <div class="relative">
+              <!-- Glow background -->
+              <div class="absolute inset-0 blur-3xl opacity-50" style="background: radial-gradient(circle, rgba(240, 185, 11, 0.3) 0%, transparent 70%);"></div>
+              
+              <!-- Mascot SVG -->
+              <div class="mascot-container float-animation relative z-10">
+                <svg viewBox="0 0 300 350" class="w-64 h-72 sm:w-80 sm:h-96" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Body -->
+                  <ellipse cx="150" cy="220" rx="90" ry="100" fill="url(#bodyGradient)"/>
+                  
+                  <!-- Face -->
+                  <ellipse cx="150" cy="180" rx="75" ry="70" fill="url(#faceGradient)"/>
+                  
+                  <!-- Eyes -->
+                  <ellipse cx="120" cy="165" rx="18" ry="22" fill="#1a1a2e"/>
+                  <ellipse cx="180" cy="165" rx="18" ry="22" fill="#1a1a2e"/>
+                  
+                  <!-- Eye shine -->
+                  <ellipse cx="126" cy="158" rx="6" ry="8" fill="white"/>
+                  <ellipse cx="186" cy="158" rx="6" ry="8" fill="white"/>
+                  
+                  <!-- Cute blush -->
+                  <ellipse cx="95" cy="190" rx="12" ry="8" fill="#ff6b9d" opacity="0.5"/>
+                  <ellipse cx="205" cy="190" rx="12" ry="8" fill="#ff6b9d" opacity="0.5"/>
+                  
+                  <!-- Smile -->
+                  <path d="M125 205 Q150 230 175 205" stroke="#1a1a2e" stroke-width="4" fill="none" stroke-linecap="round"/>
+                  
+                  <!-- Headphones -->
+                  <path d="M70 150 Q50 150 50 120 Q50 90 80 80" stroke="#00d4ff" stroke-width="8" fill="none" stroke-linecap="round"/>
+                  <path d="M230 150 Q250 150 250 120 Q250 90 220 80" stroke="#00d4ff" stroke-width="8" fill="none" stroke-linecap="round"/>
+                  
+                  <!-- Headphone cups -->
+                  <circle cx="60" cy="145" r="20" fill="#00d4ff"/>
+                  <circle cx="60" cy="145" r="12" fill="#0099cc"/>
+                  <circle cx="240" cy="145" r="20" fill="#00d4ff"/>
+                  <circle cx="240" cy="145" r="12" fill="#0099cc"/>
+                  
+                  <!-- Headphone glow -->
+                  <circle cx="60" cy="145" r="25" fill="none" stroke="#00d4ff" stroke-width="2" opacity="0.5" class="pulse-glow"/>
+                  <circle cx="240" cy="145" r="25" fill="none" stroke="#00d4ff" stroke-width="2" opacity="0.5" class="pulse-glow"/>
+                  
+                  <!-- Crown/Tiara -->
+                  <path d="M110 95 L130 75 L150 95 L170 75 L190 95" stroke="#f0b90b" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="150" cy="70" r="8" fill="#f0b90b"/>
+                  
+                  <!-- Gradients -->
+                  <defs>
+                    <linearGradient id="bodyGradient" x1="60" y1="120" x2="240" y2="320">
+                      <stop offset="0%" stop-color="#f0b90b"/>
+                      <stop offset="100%" stop-color="#d4a000"/>
+                    </linearGradient>
+                    <radialGradient id="faceGradient" cx="40%" cy="30%">
+                      <stop offset="0%" stop-color="#ffd54f"/>
+                      <stop offset="100%" stop-color="#f0b90b"/>
+                    </radialGradient>
+                  </defs>
+                </svg>
+              </div>
+              
+              <!-- Floating coins around mascot -->
+              <div class="absolute -top-4 -right-4 w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center font-display font-bold text-black text-sm shadow-lg float-animation" style="animation-delay: 0.5s;">Q</div>
+              <div class="absolute top-1/2 -left-8 w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center font-display font-bold text-white text-xs shadow-lg float-animation" style="animation-delay: 1s;">Q</div>
+              <div class="absolute -bottom-4 right-8 w-8 h-8 rounded-full bg-gradient-to-br from-teal-400 to-emerald-600 flex items-center justify-center font-display font-bold text-white text-xs shadow-lg float-animation" style="animation-delay: 1.5s;">Q</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Scroll indicator -->
+      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-500">
+        <span class="text-xs uppercase tracking-widest">Scroll</span>
+        <div class="w-6 h-10 rounded-full border-2 border-gray-600 flex justify-center pt-2">
+          <div class="w-1.5 h-3 bg-cyan-400 rounded-full animate-bounce"></div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- About Section -->
+    <section id="about" class="py-20 md:py-32 relative" style="background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg) 100%);">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h2 class="font-display font-bold text-3xl sm:text-4xl lg:text-5xl mb-4 reveal">
+            Why <span class="text-cyan-400">Quby</span>?
+          </h2>
+          <p class="text-gray-400 max-w-2xl mx-auto reveal reveal-delay-1">
+            Quby TON Coin is a community-driven meme token built on the TON Network. Fast. Secure. Scalable. Fun.
+          </p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Feature cards -->
+          <div class="glass-card rounded-2xl p-6 reveal reveal-delay-1">
+            <div class="feature-icon w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 flex items-center justify-center mb-4">
+              <svg class="w-7 h-7 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2">Built on TON</h3>
+            <p class="text-sm text-gray-400">Leveraging the power and speed of Telegram's blockchain infrastructure.</p>
+          </div>
+          
+          <div class="glass-card rounded-2xl p-6 reveal reveal-delay-2">
+            <div class="feature-icon w-14 h-14 rounded-xl bg-gradient-to-br from-yellow-500/20 to-orange-600/20 flex items-center justify-center mb-4">
+              <svg class="w-7 h-7 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2">Community Powered</h3>
+            <p class="text-sm text-gray-400">100% community-driven with fair launch and transparent development.</p>
+          </div>
+          
+          <div class="glass-card rounded-2xl p-6 reveal reveal-delay-3">
+            <div class="feature-icon w-14 h-14 rounded-xl bg-gradient-to-br from-teal-500/20 to-emerald-600/20 flex items-center justify-center mb-4">
+              <svg class="w-7 h-7 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2">Meme + Utility</h3>
+            <p class="text-sm text-gray-400">Starting as a meme, evolving into real utility with gaming and NFTs.</p>
+          </div>
+          
+          <div class="glass-card rounded-2xl p-6 reveal reveal-delay-4">
+            <div class="feature-icon w-14 h-14 rounded-xl bg-gradient-to-br from-pink-500/20 to-rose-600/20 flex items-center justify-center mb-4">
+              <svg class="w-7 h-7 text-pink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+              </svg>
+            </div>
+            <h3 class="font-display font-semibold text-lg mb-2">Viral Growth</h3>
+            <p class="text-sm text-gray-400">Designed for explosive social media growth and organic reach.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Why TON Section -->
+    <section id="why-ton" class="py-20 md:py-32 relative overflow-hidden">
+      <!-- Background decoration -->
+      <div class="absolute inset-0" style="background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(0, 212, 255, 0.05) 0%, transparent 70%);"></div>
+      
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+          <!-- Left - Visual -->
+          <div class="reveal order-2 lg:order-1">
+            <div class="relative">
+              <!-- TON Network visualization -->
+              <div class="aspect-square max-w-md mx-auto relative">
+                <!-- Central node -->
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center shadow-lg" style="box-shadow: 0 0 60px rgba(0, 212, 255, 0.5);">
+                  <span class="font-display font-bold text-2xl text-white">TON</span>
+                </div>
+                
+                <!-- Orbiting nodes -->
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-16 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center float-animation">
+                  <span class="font-display font-bold text-black">Q</span>
+                </div>
+                <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full bg-gradient-to-br from-teal-400 to-emerald-600 flex items-center justify-center float-animation" style="animation-delay: 0.5s;">
+                  <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+                </div>
+                <div class="absolute top-1/2 left-0 -translate-y-1/2 w-14 h-14 rounded-full bg-gradient-to-br from-pink-400 to-rose-600 flex items-center justify-center float-animation" style="animation-delay: 1s;">
+                  <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+                </div>
+                <div class="absolute top-1/2 right-0 -translate-y-1/2 w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-violet-600 flex items-center justify-center float-animation" style="animation-delay: 1.5s;">
+                  <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+                </div>
+                
+                <!-- Connection lines -->
+                <svg class="absolute inset-0 w-full h-full" viewBox="0 0 400 400">
+                  <line x1="200" y1="200" x2="200" y2="40" stroke="url(#lineGradient)" stroke-width="2" stroke-dasharray="5,5" opacity="0.5"/>
+                  <line x1="200" y1="200" x2="200" y2="360" stroke="url(#lineGradient)" stroke-width="2" stroke-dasharray="5,5" opacity="0.5"/>
+                  <line x1="200" y1="200" x2="40" y2="200" stroke="url(#lineGradient)" stroke-width="2" stroke-dasharray="5,5" opacity="0.5"/>
+                  <line x1="200" y1="200" x2="360" y2="200" stroke="url(#lineGradient)" stroke-width="2" stroke-dasharray="5,5" opacity="0.5"/>
+                  <defs>
+                    <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#00d4ff"/>
+                      <stop offset="100%" stop-color="#00ffaa"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Right - Content -->
+          <div class="order-1 lg:order-2">
+            <h2 class="font-display font-bold text-3xl sm:text-4xl lg:text-5xl mb-6 reveal">
+              Powered by <span class="text-cyan-400">TON</span>
+            </h2>
+            <p class="text-gray-400 text-lg mb-8 reveal reveal-delay-1">
+              Quby runs on the TON blockchain, delivering lightning-fast transactions with minimal fees in a secure, scalable ecosystem.
+            </p>
+            
+            <div class="space-y-4">
+              <div class="flex items-start gap-4 reveal reveal-delay-1">
+                <div class="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="font-semibold mb-1">Ultra-fast Transactions</h4>
+                  <p class="text-sm text-gray-400">Instant confirmations with TON's high-speed consensus mechanism.</p>
+                </div>
+              </div>
+              
+              <div class="flex items-start gap-4 reveal reveal-delay-2">
+                <div class="w-10 h-10 rounded-lg bg-yellow-500/20 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="font-semibold mb-1">Low Fees</h4>
+                  <p class="text-sm text-gray-400">Near-zero transaction costs make Quby accessible to everyone.</p>
+                </div>
+              </div>
+              
+              <div class="flex items-start gap-4 reveal reveal-delay-3">
+                <div class="w-10 h-10 rounded-lg bg-teal-500/20 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="font-semibold mb-1">Telegram-Native</h4>
+                  <p class="text-sm text-gray-400">Seamless integration with Telegram's 900M+ user ecosystem.</p>
+                </div>
+              </div>
+              
+              <div class="flex items-start gap-4 reveal reveal-delay-4">
+                <div class="w-10 h-10 rounded-lg bg-pink-500/20 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-5 h-5 text-pink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="font-semibold mb-1">Secure & Scalable</h4>
+                  <p class="text-sm text-gray-400">Built with infinite sharding for unlimited scalability.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Roadmap Section -->
+    <section id="roadmap" class="py-20 md:py-32 relative" style="background: linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 50%, var(--bg) 100%);">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h2 class="font-display font-bold text-3xl sm:text-4xl lg:text-5xl mb-4 reveal">
+            Quby <span class="text-cyan-400">Roadmap</span>
+          </h2>
+          <p class="text-gray-400 max-w-2xl mx-auto reveal reveal-delay-1">
+            Our journey from launch to domination. Every phase brings us closer to the moon.
+          </p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <!-- Phase 1 -->
+          <div class="glass-card rounded-2xl p-6 reveal reveal-delay-1">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">PHASE 1</span>
+              <h3 class="font-display font-semibold text-lg">Launch Era</h3>
+            </div>
+            <ul class="space-y-3">
+              <li class="flex items-center gap-3 text-sm text-gray-300">
+                <svg class="w-4 h-4 text-cyan-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                Token Launch on TON
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-300">
+                <svg class="w-4 h-4 text-cyan-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                Community Building
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-300">
+                <svg class="w-4 h-4 text-cyan-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                Telegram Growth Campaign
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-300">
+                <svg class="w-4 h-4 text-cyan-400 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                Viral Meme Campaign
+              </li>
+            </ul>
+          </div>
+          
+          <!-- Phase 2 -->
+          <div class="glass-card rounded-2xl p-6 reveal reveal-delay-2">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">PHASE 2</span>
+              <h3 class="font-display font-semibold text-lg">Expansion Era</h3>
+            </div>
+            <ul class="space-y-3">
+              <li class="flex items-center gap-3 text-sm text-gray-300">
+                <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                Trending on TON Platforms
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-300">
+                <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                Influencer Collaborations
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-300">
+                <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                Website Launch
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-300">
+                <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                Community Events & Giveaways
+              </li>
+            </ul>
+          </div>
+          
+          <!-- Phase 3 -->
+          <div class="glass-card rounded-2xl p-6 reveal reveal-delay-3">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-teal-500/20 text-teal-400 border border-teal-500/30">PHASE 3</span>
+              <h3 class="font-display font-semibold text-lg">Utility Era</h3>
+            </div>
+            <ul class="space-y-3">
+              <li class="flex items-center gap-3 text-sm text-gray-300">
+                <svg class="w-4 h-4 text-teal-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                NFT Collection Launch
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-300">
+                <svg class="w-4 h-4 text-teal-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                Quby Staking Concept
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-300">
+                <svg class="w-4 h-4 text-teal-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                Mini Game Integration
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-300">
+                <svg class="w-4 h-4 text-teal-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                Merch Store
+              </li>
+            </ul>
+          </div>
+          
+          <!-- Phase 4 -->
+          <div class="glass-card rounded-2xl p-6 reveal reveal-delay-4">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-pink-500/20 text-pink-400 border border-pink-500/30">PHASE 4</span>
+              <h3 class="font-display font-semibold text-lg">Domination Era</h3>
+            </div>
+            <ul class="space-y-3">
+              <li class="flex items-center gap-3 text-sm text-gray-300">
+                <svg class="w-4 h-4 text-pink-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                Major Partnerships
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-300">
+                <svg class="w-4 h-4 text-pink-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                CEX Listing Goals
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-300">
+                <svg class="w-4 h-4 text-pink-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                Global Community Expansion
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-300">
+                <svg class="w-4 h-4 text-pink-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                Quby Metaverse Vision
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Token Info Section -->
+    <section id="token" class="py-20 md:py-32 relative overflow-hidden">
+      <div class="absolute inset-0" style="background: radial-gradient(ellipse 60% 40% at 50% 50%, rgba(240, 185, 11, 0.08) 0%, transparent 70%);"></div>
+      
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div class="text-center mb-16">
+          <h2 class="font-display font-bold text-3xl sm:text-4xl lg:text-5xl mb-4 reveal">
+            Token <span class="text-yellow-400">Details</span>
+          </h2>
+        </div>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
+          <div class="glass-card rounded-2xl p-6 text-center reveal reveal-delay-1">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center mx-auto mb-4">
+              <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+              </svg>
+            </div>
+            <div class="text-sm text-gray-500 uppercase tracking-wider mb-1">Network</div>
+            <div class="font-display font-bold text-xl">TON</div>
+          </div>
+          
+          <div class="glass-card rounded-2xl p-6 text-center reveal reveal-delay-2">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-orange-600 flex items-center justify-center mx-auto mb-4">
+              <svg class="w-6 h-6 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                <path d="M12 17h.01"/>
+              </svg>
+            </div>
+            <div class="text-sm text-gray-500 uppercase tracking-wider mb-1">Type</div>
+            <div class="font-display font-bold text-xl">Meme Coin</div>
+          </div>
+          
+          <div class="glass-card rounded-2xl p-6 text-center reveal reveal-delay-3">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-emerald-600 flex items-center justify-center mx-auto mb-4">
+              <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.015-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.062 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.751-.244-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.831-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.477-1.635.099-.002.321.023.465.178.121.13.154.309.17.455.015.147.034.431.019.665z"/>
+              </svg>
+            </div>
+            <div class="text-sm text-gray-500 uppercase tracking-wider mb-1">Community</div>
+            <div class="font-display font-bold text-xl">Telegram</div>
+          </div>
+          
+          <div class="glass-card rounded-2xl p-6 text-center reveal reveal-delay-4">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-rose-600 flex items-center justify-center mx-auto mb-4">
+              <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+            </div>
+            <div class="text-sm text-gray-500 uppercase tracking-wider mb-1">Launch Platform</div>
+            <div class="font-display font-bold text-xl">GasPump</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="py-20 md:py-32 relative overflow-hidden" style="background: linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 100%);">
+      <div class="absolute inset-0">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full blur-3xl opacity-20" style="background: radial-gradient(circle, var(--accent-blue) 0%, transparent 70%);"></div>
+      </div>
+      
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
+        <h2 class="font-display font-bold text-3xl sm:text-4xl lg:text-5xl mb-6 reveal">
+          Join the <span class="shimmer-text">Quby Revolution</span>
+        </h2>
+        <p class="text-gray-400 text-lg mb-10 max-w-2xl mx-auto reveal reveal-delay-1">
+          Don't miss the next big TON meme movement. Buy early. Join strong. Grow together.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center reveal reveal-delay-2">
+          <a href="https://t.me/gasPump_bot/app?startapp=eyJyZWZfdXNlcl9pZCI6NTc0NTM1NzEzNSwidG9rZW5fYWRkcmVzcyI6IkVRRHZJVVVYNXJMX0dtUFQzeDhmQ2RFTnhPS3dqZkhLOXhGcHNPTkpfVXJDTVZUNyJ9" 
+             target="_blank"
+             class="btn-glow-gold px-10 py-5 rounded-full font-display font-bold text-lg text-black inline-flex items-center justify-center gap-2">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v12M6 12h12"/>
+            </svg>
+            Buy Now
+          </a>
+          
+          <a href="https://t.me/Qubyton" 
+             target="_blank"
+             class="btn-glow-blue px-10 py-5 rounded-full font-display font-bold text-lg text-black inline-flex items-center justify-center gap-2">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.015-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.062 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.751-.244-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.831-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.477-1.635.099-.002.321.023.465.178.121.13.154.309.17.455.015.147.034.431.019.665z"/>
+            </svg>
+            Join Telegram
+          </a>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="py-8 border-t border-gray-800/50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center font-display font-bold text-sm text-black">Q</div>
+            <span class="text-sm text-gray-500">2026 Quby TON Coin. Powered by Community.</span>
+          </div>
+          
+          <div class="flex items-center gap-4">
+            <a href="https://t.me/Qubyton" target="_blank" class="w-10 h-10 rounded-full bg-gray-800/50 flex items-center justify-center hover:bg-cyan-500/20 transition-colors" aria-label="Telegram">
+              <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.015-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.062 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.751-.244-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.831-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.477-1.635.099-.002.321.023.465.178.121.13.154.309.17.455.015.147.034.431.019.665z"/>
+              </svg>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-gray-800/50 flex items-center justify-center hover:bg-cyan-500/20 transition-colors" aria-label="Twitter">
+              <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  
+  <script type="module">
+    import * as THREE from 'three';
+    
+    // Initialize Three.js scene
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+    
+    camera.position.z = 50;
+    
+    // Create particles
+    const particleCount = 800;
+    const positions = new Float32Array(particleCount * 3);
+    const colors = new Float32Array(particleCount * 3);
+    const sizes = new Float32Array(particleCount);
+    
+    const colorPalette = [
+      new THREE.Color('#00d4ff'),
+      new THREE.Color('#f0b90b'),
+      new THREE.Color('#00ffaa'),
+      new THREE.Color('#ff6b9d')
+    ];
+    
+    for (let i = 0; i < particleCount; i++) {
+      const i3 = i * 3;
+      positions[i3] = (Math.random() - 0.5) * 200;
+      positions[i3 + 1] = (Math.random() - 0.5) * 200;
+      positions[i3 + 2] = (Math.random() - 0.5) * 100;
+      
+      const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+      colors[i3] = color.r;
+      colors[i3 + 1] = color.g;
+      colors[i3 + 2] = color.b;
+      
+      sizes[i] = Math.random() * 2 + 0.5;
+    }
+    
+    const particleGeometry = new THREE.BufferGeometry();
+    particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    particleGeometry.setAttribute('aColor', new THREE.BufferAttribute(colors, 3));
+    particleGeometry.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
+    
+    const particleMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+        uPixelRatio: { value: renderer.getPixelRatio() }
+      },
+      vertexShader: `
+        attribute vec3 aColor;
+        attribute float aSize;
+        varying vec3 vColor;
+        uniform float uTime;
+        uniform float uPixelRatio;
+        
+        void main() {
+          vColor = aColor;
+          vec3 pos = position;
+          pos.y += sin(uTime * 0.5 + position.x * 0.05) * 3.0;
+          pos.x += cos(uTime * 0.3 + position.y * 0.05) * 3.0;
+          
+          vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+          gl_PointSize = aSize * uPixelRatio * (50.0 / -mvPosition.z);
+          gl_Position = projectionMatrix * mvPosition;
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vColor;
+        
+        void main() {
+          float dist = length(gl_PointCoord - vec2(0.5));
+          if (dist > 0.5) discard;
+          
+          float alpha = 1.0 - smoothstep(0.0, 0.5, dist);
+          gl_FragColor = vec4(vColor, alpha * 0.6);
+        }
+      `,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+    
+    const particles = new THREE.Points(particleGeometry, particleMaterial);
+    scene.add(particles);
+    
+    // Mouse interaction
+    let mouseX = 0;
+    let mouseY = 0;
+    
+    document.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+    });
+    
+    // Animation loop
+    let time = 0;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    
+    function animate() {
+      requestAnimationFrame(animate);
+      
+      if (!prefersReducedMotion) {
+        time += 0.01;
+        particleMaterial.uniforms.uTime.value = time;
+        
+        particles.rotation.y += 0.0005;
+        particles.rotation.x = mouseY * 0.1;
+        particles.position.x += (mouseX * 5 - particles.position.x) * 0.02;
+        particles.position.y += (mouseY * 5 - particles.position.y) * 0.02;
+      }
+      
+      renderer.render(scene, camera);
+    }
+    
+    animate();
+    
+    // Resize handler
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      particleMaterial.uniforms.uPixelRatio.value = renderer.getPixelRatio();
+    });
+    
+    // Scroll reveal
+    const revealElements = document.querySelectorAll('.reveal');
+    
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, observerOptions);
+    
+    revealElements.forEach(el => observer.observe(el));
+    
+    // Counter animation
+    function animateCounter(element, target, duration) {
+      const start = 0;
+      const startTime = performance.now();
+      
+      function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+        const current = Math.floor(start + (target - start) * easeOutQuart);
+        
+        element.textContent = current.toLocaleString();
+        
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        }
+      }
+      
+      requestAnimationFrame(update);
+    }
+    
+    // Observe stats section
+    const statsObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateCounter(document.getElementById('stat-holders'), 2847, 2000);
+          animateCounter(document.getElementById('stat-tx'), 15420, 2000);
+          animateCounter(document.getElementById('stat-members'), 5630, 2000);
+          statsObserver.disconnect();
+        }
+      });
+    }, { threshold: 0.5 });
+    
+    const heroSection = document.querySelector('.hero-gradient');
+    if (heroSection) {
+      statsObserver.observe(heroSection);
+    }
+    
+    // Smooth scroll for navigation
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
